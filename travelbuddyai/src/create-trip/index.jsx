@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 function CreateTrip() {
   const [place, setPlace] = useState(null);
   const [formData, setFormData] = useState({});
+  const [errorMessage, setErrorMessage] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleInputChange = (name, value) => {
     setFormData({
@@ -15,12 +17,49 @@ function CreateTrip() {
     });
   };
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
+  const validateForm = () => {
+    if (!formData.location) {
+      return 'Please select a destination.';
+    }
+    if (!formData.noOfDays || formData.noOfDays <= 0) {
+      return 'Please enter a valid number of days greater than 0.';
+    }
+    if (formData.noOfDays > 5) {
+      return 'Please enter trip days less than or equal to 5.';
+    }
+    if (!formData.budget) {
+      return 'Please select a budget.';
+    }
+    if (!formData.people) {
+      return 'Please select who you are traveling with.';
+    }
+    return '';
+  };
+
+  const onGenerateTrip = () => {
+    const validationError = validateForm();
+
+    if (validationError) {
+      setErrorMessage(validationError);
+      setShowPopup(true);
+
+      // Hide the popup after 5 seconds
+      setTimeout(() => {
+        setShowPopup(false);
+      }, 5000);
+
+      return;
+    }
+
+    // Clear the error message if validation passes
+    setErrorMessage('');
+    setShowPopup(false);
+
+    // Add logic to generate the trip
+  };
 
   return (
-    <div className='sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10'>
+    <div className='sm:px-10 md:px-32 lg:px-56 xl:px-10 px-5 mt-10 relative'>
       <h1 className='font-bold text-3xl text-center'>
         Tell us your travel preferences
       </h1>
@@ -55,6 +94,13 @@ function CreateTrip() {
           />
         </div>
 
+        {/* Popup Notification */}
+        {showPopup && (
+          <div className='fixed top-5 right-5 bg-red-600 text-white p-4 rounded-lg shadow-lg transition-opacity duration-500'>
+            {errorMessage}
+          </div>
+        )}
+
         <div>
           <h2 className='text-xl my-3 font-medium'>
             What is your Budget?
@@ -67,7 +113,9 @@ function CreateTrip() {
               <div 
                 key={index} 
                 onClick={() => handleInputChange('budget', item.title)}
-                className='p-4 border cursor-pointer rounded-lg hover:shadow-lg'
+                className={`p-4 border cursor-pointer rounded-lg hover:shadow-lg
+                ${formData?.budget == item.title && 'shadow-lg border-black'}
+                `}
               >
                 <h2 className='text-4xl'>{item.icon}</h2>
                 <h2 className='font-bold text-lg'>{item.title}</h2>
@@ -86,7 +134,9 @@ function CreateTrip() {
               <div 
                 key={index} 
                 onClick={() => handleInputChange('people', item.people)}
-                className='p-4 border cursor-pointer rounded-lg hover:shadow-lg'
+                className={`p-4 border cursor-pointer rounded-lg hover:shadow-lg
+                ${formData?.people == item.people && 'shadow-lg border-black'}
+                `}
               >
                 <h2 className='text-4xl'>{item.icon}</h2>
                 <h2 className='font-bold text-lg'>{item.title}</h2>
@@ -97,7 +147,7 @@ function CreateTrip() {
         </div>
 
         <div className='my-10 flex justify-center'>
-          <Button>Generate Trip</Button>
+          <Button onClick={onGenerateTrip}>Generate Trip</Button>
         </div>
       </div>
     </div>
