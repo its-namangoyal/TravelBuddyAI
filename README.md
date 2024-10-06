@@ -1,0 +1,1 @@
+TravelBuddyAI is a cutting-edge platform that empowers users to effortlessly plan trips based on budget, duration, and group size. Leveraging AI, powered by Google Gemini, it provides personalized travel recommendations. With secure email authentication, users can easily create, customize, and optimize their travel experiences.
